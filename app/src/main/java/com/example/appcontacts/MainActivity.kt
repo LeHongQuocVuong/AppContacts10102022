@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.appcontacts.api.Contact
 import com.example.appcontacts.api.ContactRequestApi
@@ -36,7 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch(Dispatchers.Main){
             val res = api.getContacts().awaitResponse()
+
             if(res.isSuccessful){
+                binding.progressBar.visibility = View.GONE
+
                 withContext(Dispatchers.Main){
                     Toast.makeText(this@MainActivity,"connect!",Toast.LENGTH_LONG).show()
                     listContacts.clear()
@@ -52,12 +56,17 @@ class MainActivity : AppCompatActivity() {
                         val phone = listContacts[position].phone
                         val city = listContacts[position].location.city
                         val img = listContacts[position].picture.thumbnail
+                        val latitude = listContacts[position].location.coordinates.latitude
+                        val longitude = listContacts[position].location.coordinates.longitude
                         val intent = Intent(this@MainActivity, ContactActivity::class.java)
                         intent.putExtra("name",name)
                         intent.putExtra("email",email)
                         intent.putExtra("phone",phone)
                         intent.putExtra("address",city)
                         intent.putExtra("img",img)
+                        //truyền địa chỉ google map
+                        intent.putExtra("latitude",latitude)
+                        intent.putExtra("longitude",longitude)
                         startActivity(intent)
                     }
                 }
